@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Survos\SeoBundle\Service;
@@ -10,20 +9,19 @@ namespace Survos\SeoBundle\Service;
  */
 final class SeoService
 {
-    const DEFAULT_MIN_TITLE=3;
-    const DEFAULT_MAX_TITLE=10;
+    public const DEFAULT_MIN_TITLE = 3;
+    public const DEFAULT_MAX_TITLE = 10;
 
-    const DEFAULT_MIN_DESCRIPTION=13;
-    const DEFAULT_MAX_DESCRIPTION=100;
+    public const DEFAULT_MIN_DESCRIPTION = 13;
+    public const DEFAULT_MAX_DESCRIPTION = 100;
 
     /**
      * @param array<string, int|string|null> $config
      */
     public function __construct(
-        private array $config=[
-        ]
-    )
-    {
+        private array $config = [
+        ],
+    ) {
     }
 
     public function getConfigValue(string $key): int|string|null
@@ -36,14 +34,13 @@ final class SeoService
     }
 
     /**
-     * @param string $key
      * @return array<int,int>
      */
     public function getMinMax(string $key): array
     {
         return [
-            (int)$this->getConfigValue('min' . $key . 'Length'),
-            (int)$this->getConfigValue('max' . $key . 'Length')];
+            (int) $this->getConfigValue('min'.$key.'Length'),
+            (int) $this->getConfigValue('max'.$key.'Length')];
     }
 
     /**
@@ -53,5 +50,4 @@ final class SeoService
     {
         return $this->config;
     }
-
 }

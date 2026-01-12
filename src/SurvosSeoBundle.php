@@ -17,22 +17,19 @@ class SurvosSeoBundle extends AbstractBundle
 {
     /**
      * @param array<string, mixed> $config
-     * @param ContainerConfigurator $container
-     * @param ContainerBuilder $builder
-     * @return void
      */
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         $builder->autowire(SeoService::class)
             ->setPublic(true)
             ->setArgument('$config', $config)
-            ;
+        ;
 
         $builder->autowire(SeoCollector::class)
             ->setPublic(true)
             ->setArgument('$seoService', new Reference(SeoService::class))
             ->addTag('data_collector', [
-                'template' => '@SurvosSeo/seo_collector.html.twig'
+                'template' => '@SurvosSeo/seo_collector.html.twig',
             ]);
 
         $definition = $builder
@@ -44,16 +41,18 @@ class SurvosSeoBundle extends AbstractBundle
 
     public function configure(DefinitionConfigurator $definition): void
     {
-        $definition->rootNode()
+        $rootNode = $definition->rootNode();
+
+        $rootNode
             ->children()
             ->scalarNode('branding')
-                ->info("branding will be added if the title is short enough.")
+                ->info('branding will be added if the title is short enough.')
                 ->defaultValue('')->end()
             ->integerNode('minTitleLength')
-                ->info("minimum title length")
+                ->info('minimum title length')
                 ->defaultValue(30)->end()
             ->integerNode('maxTitleLength')
-                ->info("maximum title length")
+                ->info('maximum title length')
                 ->defaultValue(150)->end()
             ->integerNode('minDescriptionLength')->defaultValue(10)->end()
             ->integerNode('maxDescriptionLength')->defaultValue(255)->end()

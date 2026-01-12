@@ -8,8 +8,8 @@ use Survos\SeoBundle\Service\SeoService;
 use Symfony\Component\String\AbstractString;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
-
 use Twig\TwigFunction;
+
 use function Symfony\Component\String\u;
 
 /**
@@ -17,29 +17,26 @@ use function Symfony\Component\String\u;
  */
 final class SeoExtension extends AbstractExtension
 {
+    public const MAX_TITLE_LENGTH = 80;
 
-    const MAX_TITLE_LENGTH=80;
     public function __construct(
         private readonly SeoService $seoService,
-    )
-    {
-
+    ) {
     }
 
     public function getFilters(): array
     {
         return [
-            new TwigFilter('seo_title', fn(string $value) => $this->process('Title', $value)),
-            new TwigFilter('seo_description', fn(string $value) => $this->process('Description', $value)),
+            new TwigFilter('seo_title', fn (string $value) => $this->process('Title', $value)),
+            new TwigFilter('seo_description', fn (string $value) => $this->process('Description', $value)),
         ];
     }
 
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('seo_config', fn($key) => $this->seoService->getConfigValue($key) ?? "??$key"),
+            new TwigFunction('seo_config', fn ($key) => $this->seoService->getConfigValue($key) ?? "??$key"),
         ];
-
     }
 
     private function prepareStr(string $str): AbstractString
@@ -50,16 +47,17 @@ final class SeoExtension extends AbstractExtension
     private function process(string $metaElement, string $value): string
     {
         $str = $this->prepareStr($value);
-        $brandingStr = u((string)$this->seoService->getConfigValue('branding'));
+        $brandingStr = u((string) $this->seoService->getConfigValue('branding'));
         $length = $str->length();
         [$min, $max] = $this->seoService->getMinMax($metaElement);
 
         // Nominal case
         if ($length >= $min && $length <= $max) {
             // Is there enough place for the branding?
-            if (($length + $brandingStr->length() <= self::MAX_TITLE_LENGTH)) {
+            if ($length + $brandingStr->length() <= self::MAX_TITLE_LENGTH) {
                 $str = $str->ensureEnd($brandingStr->toString());
             }
+
             return $str->toString();
         }
 
@@ -75,5 +73,4 @@ final class SeoExtension extends AbstractExtension
 
         return $str->toString();
     }
-
 }

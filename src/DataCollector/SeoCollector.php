@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 // src/DataCollector/SeoCollector.php
 //   from https://www.strangebuzz.com/en/blog/adding-a-custom-data-collector-in-the-symfony-debug-bar
+
 namespace Survos\SeoBundle\DataCollector;
 
 use Survos\SeoBundle\Service\SeoService;
-use Survos\SeoBundle\Twig\Extension\SeoExtension;
 use Symfony\Component\DomCrawler\Crawler;
-    use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
@@ -17,7 +17,6 @@ use function Symfony\Component\String\u;
 
 final class SeoCollector extends DataCollector
 {
-
     private const MAX_PANEL_WIDTH = 50;
     private const CLASS_ERROR = 'red';
     private const CLASS_WARNING = 'yellow';
@@ -27,7 +26,7 @@ final class SeoCollector extends DataCollector
     {
     }
 
-    public function collect(Request $request, Response $response, \Throwable|null $exception = null): void
+    public function collect(Request $request, Response $response, ?\Throwable $exception = null): void
     {
         $crawler = new Crawler((string) $response->getContent());
 
@@ -47,7 +46,6 @@ final class SeoCollector extends DataCollector
                 'size' => 0,
                 'status' => $this->getTitleClass(0),
             ];
-
         }
         $this->data['title'] = $titleInfo;
 
@@ -67,22 +65,23 @@ final class SeoCollector extends DataCollector
 
     private function getTitleClass(int $size): string
     {
-        if ($size === 0) {
+        if (0 === $size) {
             return self::CLASS_ERROR;
         }
         [$min, $max] = $this->seoService->getMinMax('Title');
-        return ( ($size >= $min) && ($size <= $max)) ? self::CLASS_OK : self::CLASS_WARNING;
+
+        return (($size >= $min) && ($size <= $max)) ? self::CLASS_OK : self::CLASS_WARNING;
     }
 
     private function getDescriptionClass(int $size): string
     {
-        if ($size === 0) {
+        if (0 === $size) {
             return self::CLASS_ERROR;
         }
 
         [$min, $max] = $this->seoService->getMinMax('Description');
-        return ( ($size >= $min) && ($size <= $max)) ? self::CLASS_OK : self::CLASS_WARNING;
 
+        return (($size >= $min) && ($size <= $max)) ? self::CLASS_OK : self::CLASS_WARNING;
     }
 
     /**
