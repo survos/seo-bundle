@@ -1,51 +1,104 @@
 {% extends '@WebProfiler/Profiler/layout.html.twig' %}
 
-{# templates/data_collector/seo_collector.html.twig #}
+{% macro seo_icon() %}
+    {# Inline SVG, not a Font Awesome class: the profiler loads no icon font, so a
+       <i class="fa..."> renders as nothing at all. #}
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="10.5" cy="10.5" r="6.5"/>
+        <line x1="15.2" y1="15.2" x2="20.5" y2="20.5"/>
+    </svg>
+{% endmacro %}
 
 {% block toolbar %}
-    {% set icon %}
-        <span class="sf-toolbar-value"><i class="fad fa-vector-square"></i> SEO</span>
-    {% endset %}
+    {% if collector.applicable %}
+        {% set icon %}
+            {{ _self.seo_icon() }}
+            <span class="sf-toolbar-value">{{ collector.title.size }}/{{ collector.description.size }}</span>
+        {% endset %}
 
-    {% set text %}
-        <div class="sf-toolbar-info-piece">
-{#            <b>Title length ({{ constant('App\\Twig\\Extension\\SeoExtension::MIN_TITLE_LENGTH') }} > {{ constant('App\\Twig\\Extension\\SeoExtension::MAX_TITLE_LENGTH') }})</b>#}
-            {% set status = collector.title['status'] is defined ? collector.title['status'] : 'red' %}
-            <span class="sf-toolbar-status sf-toolbar-status-{{ status }}">
-                {% if collector.title is not empty %}
-                    {{ collector.title['size'] }}
-                {% else %}
-                    <span>Title is empty.</span>
-                {% endif %}
-            </span>
-        </div>
-
-        {% if collector.title is not empty %}
+        {% set text %}
             <div class="sf-toolbar-info-piece">
                 <b>Title</b>
-                <span>{{ collector.title['value']|nl2br|raw }}</span>
+                <span class="sf-toolbar-status sf-toolbar-status-{{ collector.title.status }}">
+                    {{ collector.title.value ? collector.title.size ~ ' chars' : 'missing' }}
+                </span>
             </div>
-        {% endif %}
+            <div class="sf-toolbar-info-piece">
+                <b>Title bounds</b>
+                <span>{{ collector.title.min }}–{{ collector.title.max }}</span>
+            </div>
 
-        <div class="sf-toolbar-info-piece">
-            <b>Description length ({{ seo_config('minDescriptionLength') }} > {{ seo_config('maxDescriptionLength')}})</b>
-            {% set status = collector.description['status'] is defined ? collector.description['status'] : 'red' %}
-            <span class="sf-toolbar-status sf-toolbar-status-{{ status }}">
-                {% if collector.description is not empty %}
-                    {{ collector.description['size'] }}
-                {% else %}
-                    <span>Description is empty.</span>
-                {% endif %}
-            </span>
-        </div>
-
-        {% if collector.description is not empty %}
             <div class="sf-toolbar-info-piece">
                 <b>Description</b>
-                <span>{{ collector.description['value']|nl2br|raw }}</span>
+                <span class="sf-toolbar-status sf-toolbar-status-{{ collector.description.status }}">
+                    {{ collector.description.value ? collector.description.size ~ ' chars' : 'missing' }}
+                </span>
             </div>
-        {% endif %}
-    {% endset %}
+            <div class="sf-toolbar-info-piece">
+                <b>Description bounds</b>
+                <span>{{ collector.description.min }}–{{ collector.description.max }}</span>
+            </div>
+        {% endset %}
 
-    {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', { link: false }) }}
+        {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', { status: collector.hasProblem ? 'yellow' : '' }) }}
+    {% endif %}
+{% endblock %}
+
+{% block menu %}
+    <span class="label {{ collector.applicable ? '' : 'disabled' }} {{ collector.applicable and collector.hasProblem ? 'label-status-warning' : '' }}">
+        <span class="icon">{{ _self.seo_icon() }}</span>
+        <strong>SEO</strong>
+    </span>
+{% endblock %}
+
+{% block panel %}
+    <h2>SEO</h2>
+
+    {% if not collector.applicable %}
+        <div class="empty">
+            <p>This response is not HTML, so there is no title or description to check.</p>
+        </div>
+    {% else %}
+        <div class="metrics">
+            <div class="metric">
+                <span class="value">{{ collector.title.size }}</span>
+                <span class="label">Title chars</span>
+            </div>
+            <div class="metric">
+                <span class="value">{{ collector.description.size }}</span>
+                <span class="label">Description chars</span>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Tag</th>
+                    <th>Length</th>
+                    <th>Allowed</th>
+                    <th>Content</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for label, item in { 'title': collector.title, 'meta description': collector.description } %}
+                    <tr>
+                        <th>{{ label }}</th>
+                        <td>
+                            <span class="label label-{{ item.status == 'green' ? 'success' : (item.status == 'red' ? 'error' : 'warning') }}">
+                                {{ item.size }}
+                            </span>
+                        </td>
+                        <td>{{ item.min }}–{{ item.max }}</td>
+                        <td>
+                            {% if item.value %}
+                                {{ item.value|nl2br }}
+                            {% else %}
+                                <em>missing</em>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
 {% endblock %}

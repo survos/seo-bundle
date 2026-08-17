@@ -41,7 +41,9 @@ class SeoDataCollectorTest extends TestCase
         $html = file_get_contents(__DIR__ . '/Fixtures/no-title.html')?:null;
         $response->setContent($html);
         $dataCollector->reset();
-        assertEquals($dataCollector->getName(), \Survos\SeoBundle\DataCollector\SeoCollector::class);
+        // Not the FQCN: getName() becomes the profiler panel's URL segment, so the
+        // class name would put the panel at a url-encoded namespace path.
+        assertEquals('survos_seo', $dataCollector->getName());
         $dataCollector->collect($request, $response);
         $titleInfo = $dataCollector->getTitle();
         assertEquals($titleInfo['size'], 0);
