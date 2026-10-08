@@ -86,7 +86,7 @@ final class SeoCollector extends AbstractDataCollector
         return false;
     }
 
-    public static function getTemplate(): ?string
+    public static function getTemplate(): string
     {
         return '@SurvosSeo/seo_collector.html.twig';
     }

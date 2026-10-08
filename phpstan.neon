@@ -5,4 +5,4 @@ parameters:
         - ./src/
         - ./tests
     excludePaths:
-        - tests/project-dir
+        - tests/project-dir (?)
