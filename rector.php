@@ -6,7 +6,7 @@ use Rector\Config\RectorConfig;
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__ . '/src',
+        __DIR__.'/src',
     ])
     // uncomment to reach your current PHP version
      ->withPhpSets(php82: true)

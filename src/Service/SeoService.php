@@ -28,9 +28,8 @@ final class SeoService
     {
         if (array_key_exists($key, $this->config)) {
             return $this->config[$key];
-        } else {
-            throw new \RuntimeException("Config key '$key' not found");
         }
+        throw new \RuntimeException("Config key '$key' not found");
     }
 
     /**

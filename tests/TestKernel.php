@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Survos\SeoBundle\Tests;
 
+use Survos\SeoBundle\SurvosSeoBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
-use Survos\SeoBundle\SurvosSeoBundle;
 
 class TestKernel extends BaseKernel
 {
@@ -29,6 +31,6 @@ class TestKernel extends BaseKernel
 
     public function getProjectDir(): string
     {
-        return __DIR__ . '/project-dir';
+        return __DIR__.'/project-dir';
     }
 }
